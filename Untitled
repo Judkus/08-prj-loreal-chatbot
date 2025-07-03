@@ -1,0 +1,32 @@
+// This chatbot only answers questions about L’Oréal products, beauty routines, and product recommendations.
+// If a question is not about L’Oréal or beauty, it will politely explain its limitations.
+
+// Function to check if the question is about L’Oréal or beauty
+function isLorealOrBeautyQuestion(question) {
+  // Convert question to lowercase for easier checking
+  const lower = question.toLowerCase();
+  // Check for keywords related to L’Oréal or beauty
+  return (
+    lower.includes("l’oréal") ||
+    lower.includes("loreal") ||
+    lower.includes("beauty") ||
+    lower.includes("skincare") ||
+    lower.includes("makeup") ||
+    lower.includes("haircare") ||
+    lower.includes("product") ||
+    lower.includes("routine") ||
+    lower.includes("recommend")
+  );
+}
+
+// Example usage in your main chat function:
+async function handleUserQuestion(question) {
+  if (!isLorealOrBeautyQuestion(question)) {
+    // If the question is not related, reply politely
+    return "Sorry, I can only help with L’Oréal products, beauty routines, and product recommendations.";
+  }
+
+  // ...existing code to call OpenAI API and return the answer...
+}
+
+// ...existing code...
