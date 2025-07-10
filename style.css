@@ -23,7 +23,11 @@ body {
   color: var(--loreal-gray-dark);
   display: flex;
   justify-content: center;
-  background: linear-gradient(135deg, var(--loreal-white) 0%, var(--loreal-gray-light) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--loreal-white) 0%,
+    var(--loreal-gray-light) 100%
+  );
   min-height: 100vh;
 }
 
@@ -36,7 +40,12 @@ body {
 .site-header {
   text-align: center;
   padding: 50px 0 30px;
-  background: linear-gradient(135deg, var(--loreal-white) 0%, var(--loreal-gray-light) 50%, var(--loreal-gold-light) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--loreal-white) 0%,
+    var(--loreal-gray-light) 50%,
+    var(--loreal-gold-light) 100%
+  );
   border-radius: 12px;
   margin-bottom: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -89,7 +98,11 @@ body {
 }
 
 .msg.user {
-  background: linear-gradient(135deg, var(--loreal-gold) 0%, var(--loreal-gold-light) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--loreal-gold) 0%,
+    var(--loreal-gold-light) 100%
+  );
   color: var(--loreal-black);
   margin-left: auto;
   margin-right: 0;
@@ -137,7 +150,11 @@ body {
 
 .chat-form button {
   font-size: 16px;
-  background: linear-gradient(135deg, var(--loreal-black) 0%, var(--loreal-gray-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--loreal-black) 0%,
+    var(--loreal-gray-dark) 100%
+  );
   color: var(--loreal-white);
   border: none;
   border-radius: 50%;
@@ -157,7 +174,11 @@ body {
 }
 
 .chat-form button:hover {
-  background: linear-gradient(135deg, var(--loreal-gold) 0%, var(--loreal-gold-light) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--loreal-gold) 0%,
+    var(--loreal-gold-light) 100%
+  );
   color: var(--loreal-black);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
@@ -188,7 +209,11 @@ body {
   font-size: 14px;
   color: var(--loreal-gray-medium);
   padding: 20px;
-  background: linear-gradient(135deg, var(--loreal-white) 0%, var(--loreal-gray-light) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--loreal-white) 0%,
+    var(--loreal-gray-light) 100%
+  );
   border-radius: 8px;
   border-top: 2px solid var(--loreal-gold);
 }
@@ -207,7 +232,7 @@ body {
 }
 
 .site-footer a::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 0;
