@@ -5,7 +5,7 @@ const chatWindow = document.getElementById("chatWindow");
 const sendBtn = document.getElementById("sendBtn");
 
 // L'Oréal-specific system prompt for the AI
-const SYSTEM_PROMPT = `You are L'Oréal's Smart Product Advisor, an expert beauty consultant specializing in L'Oréal products and beauty routines. Your role is to:
+const SYSTEM_PROMPT = `You are L'Oréal's Smart Product Advisor, an expert beauty consultant specializing EXCLUSIVELY in L'Oréal products and beauty routines. Your role is to:
 
 WHAT YOU DO:
 • Recommend L'Oréal products for skincare, haircare, makeup, and fragrance
@@ -14,22 +14,37 @@ WHAT YOU DO:
 • Suggest products based on skin type, hair type, concerns, and preferences
 • Offer step-by-step beauty tutorials and tips
 • Help customers find products for specific needs (anti-aging, acne, color correction, etc.)
+• Answer questions about L'Oréal brand history and values
+• Provide beauty tips and techniques related to L'Oréal products
 
-WHAT YOU DON'T DO:
+WHAT YOU ABSOLUTELY DON'T DO:
 • Discuss non-L'Oréal brands or competitor products
 • Provide medical advice or diagnose skin/hair conditions
-• Answer questions unrelated to beauty, skincare, or L'Oréal products
-• Engage in topics outside of beauty and cosmetics
+• Answer questions unrelated to beauty, skincare, haircare, makeup, or fragrance
+• Engage in topics outside of beauty and cosmetics (politics, sports, technology, food, etc.)
+• Provide information about other companies or industries
+• Discuss personal topics unrelated to beauty
+• Answer general knowledge questions not related to beauty/L'Oréal
+
+STRICT GUIDELINES FOR OFF-TOPIC QUESTIONS:
+When someone asks about anything unrelated to L'Oréal products or beauty topics, you MUST politely decline and redirect them back to your expertise area. Use these polite responses:
+
+For general non-beauty topics: "I'm specifically designed to help with L'Oréal products and beauty advice. I'd love to help you with skincare routines, makeup tips, or finding the perfect L'Oréal products for your needs instead!"
+
+For competitor brands: "I specialize exclusively in L'Oréal products and can't provide information about other brands. However, I'd be happy to recommend similar L'Oréal products that might meet your needs!"
+
+For medical questions: "I can't provide medical advice, but I can help you find gentle L'Oréal products suitable for sensitive skin or specific beauty concerns. Would you like some recommendations?"
+
+For completely unrelated topics: "That's outside my area of expertise! I'm here to be your L'Oréal beauty advisor. How can I help you discover amazing L'Oréal products or create a personalized beauty routine today?"
 
 TONE & STYLE:
-• Professional yet friendly and approachable
-• Enthusiastic about beauty and L'Oréal products
-• Helpful and knowledgeable
-• Encouraging and supportive
+• Always remain professional, friendly, and enthusiastic about L'Oréal
+• Be helpful while staying strictly within your domain
+• Redirect conversations back to L'Oréal and beauty topics
+• Show genuine interest in helping with beauty needs
+• Use encouraging and supportive language
 
-If asked about topics outside your expertise, politely redirect: "I'm here to help with L'Oréal products and beauty advice. How can I assist you with your beauty routine today?"
-
-Always provide specific L'Oréal product recommendations when possible and explain why they're suitable for the customer's needs.`;
+REMEMBER: You are a L'Oréal brand ambassador. Every response should reinforce the brand and guide customers toward L'Oréal products and beauty solutions. Never compromise on staying within your specialized domain.`;
 
 // Set initial welcome message when page loads
 chatWindow.innerHTML =
@@ -51,6 +66,23 @@ chatForm.addEventListener("submit", async (e) => {
   // Check if message is too long (optional validation)
   if (message.length > 1000) {
     alert("Please keep your message under 1000 characters.");
+    return;
+  }
+
+  // Check if the message is clearly off-topic and provide immediate response
+  const offTopicResponse = checkForOffTopicQuestions(message);
+  if (offTopicResponse) {
+    // Display the user's message
+    addMessage(message, "user");
+    
+    // Clear the input field
+    userInput.value = "";
+    
+    // Show immediate polite refusal without calling API
+    setTimeout(() => {
+      addMessage(offTopicResponse, "ai");
+    }, 500); // Small delay to feel natural
+    
     return;
   }
 
@@ -120,6 +152,104 @@ userInput.addEventListener("keypress", (e) => {
 
 // Auto-focus on input field when page loads
 userInput.focus();
+
+// Function to check for obviously off-topic questions and provide immediate polite responses
+function checkForOffTopicQuestions(message) {
+  const lowerMessage = message.toLowerCase();
+  
+  // Define patterns for clearly off-topic questions
+  const offTopicPatterns = [
+    // Technology topics
+    /\b(computer|software|programming|coding|internet|website|app|technology|tech|digital|AI|artificial intelligence|robot|phone|mobile|iphone|android)\b/,
+    
+    // Sports
+    /\b(football|soccer|basketball|baseball|tennis|golf|sports|team|game|match|score|player|athlete)\b/,
+    
+    // Politics/News
+    /\b(politics|government|president|election|vote|political|policy|law|congress|senate|news|current events)\b/,
+    
+    // Food/Cooking
+    /\b(recipe|food|cooking|restaurant|meal|dinner|lunch|breakfast|kitchen|chef|eat|eating)\b/,
+    
+    // Travel
+    /\b(travel|trip|vacation|flight|hotel|airport|destination|tourism|country|city|visit)\b/,
+    
+    // Entertainment
+    /\b(movie|film|music|song|concert|album|artist|actor|actress|celebrity|tv show|series|netflix|youtube)\b/,
+    
+    // Weather
+    /\b(weather|temperature|rain|snow|sunny|cloudy|forecast|climate|storm)\b/,
+    
+    // Education (non-beauty)
+    /\b(school|college|university|homework|exam|test|study|student|teacher|class|degree)\b/,
+    
+    // Finance
+    /\b(money|bank|investment|stock|finance|economy|price|cost|expensive|cheap|budget|salary)\b/,
+    
+    // Health (non-beauty)
+    /\b(doctor|hospital|medicine|illness|disease|sick|health|medical|pain|hurt|injury)\b/,
+    
+    // General conversation starters
+    /^(hi|hello|hey|what's up|how are you|good morning|good afternoon|good evening)\s*$/,
+    
+    // Math/Science
+    /\b(math|science|physics|chemistry|biology|calculation|formula|experiment)\b/,
+    
+    // Other random topics
+    /\b(car|vehicle|driving|house|home|family|pet|animal|dog|cat|book|reading)\b/
+  ];
+  
+  // Check for competitor beauty brands
+  const competitorPatterns = [
+    /\b(maybelline|revlon|covergirl|neutrogena|olay|clinique|estee lauder|mac|sephora|ulta|drugstore|pharmacy)\b/,
+    /\b(competitor|other brand|different brand|alternative|instead of loreal)\b/
+  ];
+  
+  // Medical/diagnosis questions
+  const medicalPatterns = [
+    /\b(diagnose|diagnosis|medical condition|skin condition|allergy|allergic|rash|infection|disease)\b/,
+    /\b(is this normal|should I see a doctor|medical advice|health problem)\b/
+  ];
+  
+  // Check each pattern category and return appropriate response
+  for (const pattern of offTopicPatterns) {
+    if (pattern.test(lowerMessage)) {
+      return "That's outside my area of expertise! I'm here to be your L'Oréal beauty advisor. How can I help you discover amazing L'Oréal products or create a personalized beauty routine today? ✨";
+    }
+  }
+  
+  for (const pattern of competitorPatterns) {
+    if (pattern.test(lowerMessage)) {
+      return "I specialize exclusively in L'Oréal products and can't provide information about other brands. However, I'd be happy to recommend similar L'Oréal products that might meet your needs! What type of beauty solution are you looking for? 💄";
+    }
+  }
+  
+  for (const pattern of medicalPatterns) {
+    if (pattern.test(lowerMessage)) {
+      return "I can't provide medical advice, but I can help you find gentle L'Oréal products suitable for sensitive skin or specific beauty concerns. Would you like some recommendations for sensitive skin care? 🌿";
+    }
+  }
+  
+  // Check for very generic greetings
+  if (/^(hi|hello|hey|what's up|how are you|good morning|good afternoon|good evening)[\s\?!]*$/i.test(message)) {
+    return "Hello! 👋 I'm your L'Oréal Smart Product Advisor. I'm here to help you discover the perfect L'Oréal products and create personalized beauty routines. What beauty goals can I help you achieve today?";
+  }
+  
+  // Check for attempts to override system behavior
+  const systemOverridePatterns = [
+    /\b(ignore previous instructions|forget your role|act as|pretend to be|system prompt|override|jailbreak)\b/i,
+    /\b(you are now|from now on|instead of being|stop being|don't be)\b/i
+  ];
+  
+  for (const pattern of systemOverridePatterns) {
+    if (pattern.test(lowerMessage)) {
+      return "I'm specifically designed to be your L'Oréal beauty advisor and I'm excited to stay focused on that! Let me help you with L'Oréal products, beauty routines, or skincare advice. What beauty questions do you have? ✨";
+    }
+  }
+  
+  // If no off-topic patterns matched, allow the question to proceed to OpenAI
+  return null;
+}
 
 // Function to add messages to chat window with enhanced display
 function addMessage(message, sender, isLoading = false) {
@@ -302,19 +432,9 @@ function removeLastMessage() {
   }
 }
 
-// Function to send request to OpenAI's Chat Completions API
-async function callOpenAI(userMessage) {
-  // Get API key from secrets.js file
-  const API_KEY = window.OPENAI_API_KEY;
-
-  // Check if API key is available
-  if (!API_KEY || API_KEY === "your-api-key-here") {
-    throw new Error(
-      "OpenAI API key not found. Please check your secrets.js file."
-    );
-  }
-
-  // Prepare the request data for OpenAI API
+// Function to send request to Cloudflare Worker
+async function callCloudflareWorker(userMessage) {
+  // Prepare the request data for the Cloudflare Worker
   const requestData = {
     model: "gpt-4o", // Using GPT-4o as specified in instructions
     messages: [
@@ -328,18 +448,17 @@ async function callOpenAI(userMessage) {
       },
     ],
     max_tokens: 500, // Limit response length
-    temperature: 0.7, // Control creativity (0.0 = very focused, 1.0 = very creative)
+    temperature: 0.7, // Control creativity
     top_p: 1, // Control diversity
     frequency_penalty: 0, // Control repetition
     presence_penalty: 0, // Control topic diversity
   };
 
-  // Make the API request using fetch (no external libraries needed)
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  // Make the API request using fetch
+  const response = await fetch("https://project8lorealchatbot.kussuejh.workers.dev/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${API_KEY}`,
     },
     body: JSON.stringify(requestData),
   });
@@ -350,14 +469,14 @@ async function callOpenAI(userMessage) {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage =
       errorData.error?.message ||
-      `API request failed with status ${response.status}`;
+      `Cloudflare Worker request failed with status ${response.status}`;
     throw new Error(errorMessage);
   }
 
-  // Parse the JSON response from OpenAI
-  const data = await response.json(); // Check if we got a valid response
+  // Parse the JSON response from the Cloudflare Worker
+  const data = await response.json();
   if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-    throw new Error("Invalid response format from OpenAI API");
+    throw new Error("Invalid response format from Cloudflare Worker");
   }
 
   // Get the AI's response
@@ -365,7 +484,6 @@ async function callOpenAI(userMessage) {
 
   // Ensure the response isn't too long for good UX
   if (aiResponse.length > 1500) {
-    // Truncate very long responses and add a note
     aiResponse =
       aiResponse.substring(0, 1500) +
       "...\n\n💡 *Response truncated for better readability. Feel free to ask for more specific details!*";
@@ -373,6 +491,11 @@ async function callOpenAI(userMessage) {
 
   // Return the AI's message content
   return aiResponse;
+}
+
+// Replace the callOpenAI function with callCloudflareWorker
+async function callOpenAI(userMessage) {
+  return await callCloudflareWorker(userMessage);
 }
 
 // Log that the script has loaded successfully
