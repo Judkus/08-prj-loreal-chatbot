@@ -95,6 +95,7 @@ body {
   padding: 12px 16px;
   border-radius: 8px;
   max-width: 85%;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .msg.user {
@@ -116,6 +117,135 @@ body {
   margin-left: 0;
   margin-right: auto;
   border-left: 4px solid var(--loreal-gold);
+}
+
+/* Enhanced message display styling */
+.message-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.ai-avatar,
+.user-avatar {
+  font-size: 18px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--loreal-white);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sender-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--loreal-gray-dark);
+}
+
+.msg.user .sender-name {
+  color: var(--loreal-black);
+}
+
+.message-content {
+  margin-top: 8px;
+  word-wrap: break-word;
+  line-height: 1.7;
+}
+
+.message-content strong {
+  color: var(--loreal-black);
+  font-weight: 600;
+}
+
+.message-content ul {
+  margin: 12px 0;
+  padding-left: 20px;
+}
+
+.message-content li {
+  margin-bottom: 6px;
+  list-style-type: disc;
+}
+
+.msg.ai .message-content li {
+  color: var(--loreal-gray-dark);
+}
+
+/* Typing indicator animation */
+.typing-indicator {
+  display: inline-block;
+  font-style: italic;
+  color: var(--loreal-gray-medium);
+}
+
+.dots {
+  animation: typing 1.5s infinite;
+}
+
+@keyframes typing {
+  0%,
+  20% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Loading message specific styling */
+#loading-message {
+  background: var(--loreal-gray-light);
+  border-left: 4px solid var(--loreal-gold);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Responsive design for mobile devices */
+@media (max-width: 768px) {
+  .msg {
+    max-width: 95%;
+    padding: 10px 12px;
+  }
+
+  .message-header {
+    margin-bottom: 6px;
+  }
+
+  .ai-avatar,
+  .user-avatar {
+    font-size: 16px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .sender-name {
+    font-size: 12px;
+  }
+
+  .message-content {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .message-content ul {
+    padding-left: 16px;
+  }
 }
 
 /* input row */
