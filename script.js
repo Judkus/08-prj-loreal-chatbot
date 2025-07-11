@@ -74,15 +74,15 @@ chatForm.addEventListener("submit", async (e) => {
   if (offTopicResponse) {
     // Display the user's message
     addMessage(message, "user");
-    
+
     // Clear the input field
     userInput.value = "";
-    
+
     // Show immediate polite refusal without calling API
     setTimeout(() => {
       addMessage(offTopicResponse, "ai");
     }, 500); // Small delay to feel natural
-    
+
     return;
   }
 
@@ -153,100 +153,117 @@ userInput.addEventListener("keypress", (e) => {
 // Auto-focus on input field when page loads
 userInput.focus();
 
+// Initialize conversation context
+let conversationContext = [];
+
+// Function to update conversation context
+function updateConversationContext(role, content) {
+  conversationContext.push({ role, content });
+
+  // Limit context to the last 10 messages for efficiency
+  if (conversationContext.length > 10) {
+    conversationContext.shift();
+  }
+}
+
 // Function to check for obviously off-topic questions and provide immediate polite responses
 function checkForOffTopicQuestions(message) {
   const lowerMessage = message.toLowerCase();
-  
+
   // Define patterns for clearly off-topic questions
   const offTopicPatterns = [
     // Technology topics
     /\b(computer|software|programming|coding|internet|website|app|technology|tech|digital|AI|artificial intelligence|robot|phone|mobile|iphone|android)\b/,
-    
+
     // Sports
     /\b(football|soccer|basketball|baseball|tennis|golf|sports|team|game|match|score|player|athlete)\b/,
-    
+
     // Politics/News
     /\b(politics|government|president|election|vote|political|policy|law|congress|senate|news|current events)\b/,
-    
+
     // Food/Cooking
     /\b(recipe|food|cooking|restaurant|meal|dinner|lunch|breakfast|kitchen|chef|eat|eating)\b/,
-    
+
     // Travel
     /\b(travel|trip|vacation|flight|hotel|airport|destination|tourism|country|city|visit)\b/,
-    
+
     // Entertainment
     /\b(movie|film|music|song|concert|album|artist|actor|actress|celebrity|tv show|series|netflix|youtube)\b/,
-    
+
     // Weather
     /\b(weather|temperature|rain|snow|sunny|cloudy|forecast|climate|storm)\b/,
-    
+
     // Education (non-beauty)
     /\b(school|college|university|homework|exam|test|study|student|teacher|class|degree)\b/,
-    
+
     // Finance
     /\b(money|bank|investment|stock|finance|economy|price|cost|expensive|cheap|budget|salary)\b/,
-    
+
     // Health (non-beauty)
     /\b(doctor|hospital|medicine|illness|disease|sick|health|medical|pain|hurt|injury)\b/,
-    
+
     // General conversation starters
     /^(hi|hello|hey|what's up|how are you|good morning|good afternoon|good evening)\s*$/,
-    
+
     // Math/Science
     /\b(math|science|physics|chemistry|biology|calculation|formula|experiment)\b/,
-    
+
     // Other random topics
-    /\b(car|vehicle|driving|house|home|family|pet|animal|dog|cat|book|reading)\b/
+    /\b(car|vehicle|driving|house|home|family|pet|animal|dog|cat|book|reading)\b/,
   ];
-  
+
   // Check for competitor beauty brands
   const competitorPatterns = [
     /\b(maybelline|revlon|covergirl|neutrogena|olay|clinique|estee lauder|mac|sephora|ulta|drugstore|pharmacy)\b/,
-    /\b(competitor|other brand|different brand|alternative|instead of loreal)\b/
+    /\b(competitor|other brand|different brand|alternative|instead of loreal)\b/,
   ];
-  
+
   // Medical/diagnosis questions
   const medicalPatterns = [
     /\b(diagnose|diagnosis|medical condition|skin condition|allergy|allergic|rash|infection|disease)\b/,
-    /\b(is this normal|should I see a doctor|medical advice|health problem)\b/
+    /\b(is this normal|should I see a doctor|medical advice|health problem)\b/,
   ];
-  
+
   // Check each pattern category and return appropriate response
   for (const pattern of offTopicPatterns) {
     if (pattern.test(lowerMessage)) {
       return "That's outside my area of expertise! I'm here to be your L'Oréal beauty advisor. How can I help you discover amazing L'Oréal products or create a personalized beauty routine today? ✨";
     }
   }
-  
+
   for (const pattern of competitorPatterns) {
     if (pattern.test(lowerMessage)) {
       return "I specialize exclusively in L'Oréal products and can't provide information about other brands. However, I'd be happy to recommend similar L'Oréal products that might meet your needs! What type of beauty solution are you looking for? 💄";
     }
   }
-  
+
   for (const pattern of medicalPatterns) {
     if (pattern.test(lowerMessage)) {
       return "I can't provide medical advice, but I can help you find gentle L'Oréal products suitable for sensitive skin or specific beauty concerns. Would you like some recommendations for sensitive skin care? 🌿";
     }
   }
-  
+
   // Check for very generic greetings
-  if (/^(hi|hello|hey|what's up|how are you|good morning|good afternoon|good evening)[\s\?!]*$/i.test(message)) {
+  if (
+    /^(hi|hello|hey|what's up|how are you|good morning|good afternoon|good evening)[\s\?!]*$/i.test(
+      message
+    )
+  ) {
     return "Hello! 👋 I'm your L'Oréal Smart Product Advisor. I'm here to help you discover the perfect L'Oréal products and create personalized beauty routines. What beauty goals can I help you achieve today?";
   }
-  
+
   // Check for attempts to override system behavior
   const systemOverridePatterns = [
     /\b(ignore previous instructions|forget your role|act as|pretend to be|system prompt|override|jailbreak)\b/i,
-    /\b(you are now|from now on|instead of being|stop being|don't be)\b/i
+    /\b(you are now|from now on|instead of being|stop being|don't be)\b/i,
   ];
-  
+
   for (const pattern of systemOverridePatterns) {
     if (pattern.test(lowerMessage)) {
       return "I'm specifically designed to be your L'Oréal beauty advisor and I'm excited to stay focused on that! Let me help you with L'Oréal products, beauty routines, or skincare advice. What beauty questions do you have? ✨";
     }
   }
-  
+
   // If no off-topic patterns matched, allow the question to proceed to OpenAI
   return null;
 }
@@ -434,18 +451,15 @@ function removeLastMessage() {
 
 // Function to send request to Cloudflare Worker
 async function callCloudflareWorker(userMessage) {
+  // Update conversation context with user's message
+  updateConversationContext("user", userMessage);
+
   // Prepare the request data for the Cloudflare Worker
   const requestData = {
     model: "gpt-4o", // Using GPT-4o as specified in instructions
     messages: [
-      {
-        role: "system",
-        content: SYSTEM_PROMPT,
-      },
-      {
-        role: "user",
-        content: userMessage,
-      },
+      { role: "system", content: SYSTEM_PROMPT },
+      ...conversationContext,
     ],
     max_tokens: 500, // Limit response length
     temperature: 0.7, // Control creativity
@@ -455,17 +469,19 @@ async function callCloudflareWorker(userMessage) {
   };
 
   // Make the API request using fetch
-  const response = await fetch("https://project8lorealchatbot.kussuejh.workers.dev/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requestData),
-  });
+  const response = await fetch(
+    "https://project8lorealchatbot.kussuejh.workers.dev/",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    }
+  );
 
   // Check if the request was successful
   if (!response.ok) {
-    // Get error details from response
     const errorData = await response.json().catch(() => ({}));
     const errorMessage =
       errorData.error?.message ||
@@ -480,16 +496,19 @@ async function callCloudflareWorker(userMessage) {
   }
 
   // Get the AI's response
-  let aiResponse = data.choices[0].message.content;
+  const aiResponse = data.choices[0].message.content;
+
+  // Update conversation context with AI's response
+  updateConversationContext("assistant", aiResponse);
 
   // Ensure the response isn't too long for good UX
   if (aiResponse.length > 1500) {
-    aiResponse =
+    return (
       aiResponse.substring(0, 1500) +
-      "...\n\n💡 *Response truncated for better readability. Feel free to ask for more specific details!*";
+      "...\n\n💡 *Response truncated for better readability. Feel free to ask for more specific details!*"
+    );
   }
 
-  // Return the AI's message content
   return aiResponse;
 }
 
