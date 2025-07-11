@@ -89,6 +89,9 @@ chatForm.addEventListener("submit", async (e) => {
   // Display the user's message in the chat window
   addMessage(message, "user");
 
+  // Display the user's latest question
+  displayLatestQuestion(message);
+
   // Clear the input field so user can type a new message
   userInput.value = "";
 
@@ -515,6 +518,23 @@ async function callCloudflareWorker(userMessage) {
 // Replace the callOpenAI function with callCloudflareWorker
 async function callOpenAI(userMessage) {
   return await callCloudflareWorker(userMessage);
+}
+
+// Function to display the user's latest question above the chat response
+function displayLatestQuestion(question) {
+  // Check if the latest question container exists
+  let latestQuestionDiv = document.getElementById("latest-question");
+
+  if (!latestQuestionDiv) {
+    // Create the container if it doesn't exist
+    latestQuestionDiv = document.createElement("div");
+    latestQuestionDiv.id = "latest-question";
+    latestQuestionDiv.className = "latest-question";
+    chatWindow.insertAdjacentElement("beforebegin", latestQuestionDiv);
+  }
+
+  // Update the container with the latest question
+  latestQuestionDiv.textContent = `Latest Question: ${question}`;
 }
 
 // Log that the script has loaded successfully
