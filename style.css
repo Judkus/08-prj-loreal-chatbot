@@ -40,12 +40,8 @@ body {
 .site-header {
   text-align: center;
   padding: 50px 0 30px;
-  background: linear-gradient(
-    135deg,
-    var(--loreal-white) 0%,
-    var(--loreal-gray-light) 50%,
-    var(--loreal-gold-light) 100%
-  );
+  background: linear-gradient(135deg, #e31837, #880e4f);
+  color: #000000;
   border-radius: 12px;
   margin-bottom: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -181,6 +177,16 @@ body {
   50% {
     opacity: 1;
   }
+}
+
+/* Icons for user and assistant */
+.msg.user::before {
+  content: "👤";
+  margin-right: 10px;
+}
+.msg.ai::before {
+  content: "🤖";
+  margin-right: 10px;
 }
 
 /* Loading message specific styling */
@@ -327,13 +333,9 @@ body {
   margin: 60px 0 40px;
   text-align: center;
   font-size: 14px;
-  color: var(--loreal-gray-medium);
+  color: #ffffff;
   padding: 20px;
-  background: linear-gradient(
-    135deg,
-    var(--loreal-white) 0%,
-    var(--loreal-gray-light) 100%
-  );
+  background: linear-gradient(135deg, #333333, #000000);
   border-radius: 8px;
   border-top: 2px solid var(--loreal-gold);
 }
